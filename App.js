@@ -1,4 +1,3 @@
-// App.js
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -6,6 +5,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 
 import LoginScreen from "./screens/LoginScreen";
+import SignupScreen from "./screens/SignupScreen";
+import CompleteProfileScreen from "./screens/CompleteProfileScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ReportIssueScreen from "./screens/ReportIssueScreen";
 import MyReportsScreen from "./screens/MyReportsScreen";
@@ -15,7 +16,6 @@ import ProfileScreen from "./screens/ProfileScreen";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Bottom Tabs (after login)
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -29,6 +29,8 @@ function MainTabs() {
           else if (route.name === "Reports") iconName = "list";
           else if (route.name === "Map") iconName = "map";
           else if (route.name === "Profile") iconName = "person";
+
+          // Return the Ionicons component with proper name, size, and color
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
@@ -45,12 +47,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* Login is the first screen */}
         <Stack.Screen name="Login" component={LoginScreen} />
-        {/* Bottom tabs after login */}
-        <Stack.Screen name="Main" component={MainTabs} />
-        {/* Standalone screen for reporting issues */}
+        <Stack.Screen name="Signup" component={SignupScreen} />
+        <Stack.Screen name="CompleteProfile" component={CompleteProfileScreen} />
+        <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="ReportIssue" component={ReportIssueScreen} />
+        {/* Add other screens as needed */}
       </Stack.Navigator>
     </NavigationContainer>
   );

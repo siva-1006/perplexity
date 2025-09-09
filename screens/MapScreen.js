@@ -1,7 +1,7 @@
 // screens/MapScreen.js
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, UrlTile } from "react-native-maps";
 import * as Location from "expo-location";
 
 export default function MapScreen() {
@@ -24,7 +24,7 @@ export default function MapScreen() {
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        initialRegion={{
+        region={{
           latitude: location ? location.latitude : 28.6139, // fallback Delhi
           longitude: location ? location.longitude : 77.2090,
           latitudeDelta: 0.05,
@@ -32,6 +32,14 @@ export default function MapScreen() {
         }}
         showsUserLocation={true}
       >
+        {/* OSM Tile Layer (no API key needed) */}
+        <UrlTile
+          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maximumZ={19}
+          flipY={false}
+        />
+
+        {/* User Marker */}
         {location && (
           <Marker
             coordinate={{

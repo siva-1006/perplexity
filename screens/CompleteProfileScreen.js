@@ -1,22 +1,5 @@
-// // screens/ProfileScreen.js
-// import React from "react";
-// import { View, Text, StyleSheet } from "react-native";
-
-// export default function ProfileScreen() {
-//   return (
-//     <View style={styles.container}>
-//       <Text style={{ fontSize: 18 }}>User Profile (Coming soon)</Text>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, justifyContent: "center", alignItems: "center" },
-// });
-
-
 import React, { useState } from "react";
-import { View, TextInput, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { api } from "../api";
 
 export default function CompleteProfileScreen({ route, navigation }) {
@@ -38,22 +21,9 @@ export default function CompleteProfileScreen({ route, navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Complete Your Profile</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="About you"
-        value={info}
-        onChangeText={setInfo}
-      />
-
+      <TextInput style={styles.input} placeholder="Full Name" value={name} onChangeText={setName} />
+      <TextInput style={styles.input} placeholder="About You" value={info} onChangeText={setInfo} />
       {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
-
       <TouchableOpacity style={styles.btn} onPress={handleSave}>
         <Text style={styles.btnText}>Save</Text>
       </TouchableOpacity>
