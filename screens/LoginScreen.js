@@ -129,7 +129,8 @@ export default function LoginScreen({ navigation }) {
   async function handleLogin() {
     setError("");
     try {
-      const data = await api("/auth/login", "POST", { identifier, password });
+      const data = await api("api/auth/login", "POST", { identifier, password });
+      
 
       // if profile is incomplete → go to CompleteProfile
       if (!data.user.name || !data.user.phone) {

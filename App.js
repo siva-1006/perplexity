@@ -12,6 +12,7 @@ import ReportIssueScreen from "./screens/ReportIssueScreen";
 import MyReportsScreen from "./screens/MyReportsScreen";
 import MapScreen from "./screens/MapScreen";
 import ProfileScreen from "./screens/ProfileScreen";
+import IssuesListScreen from "./screens/IssuesListScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -21,7 +22,7 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: "#2e7d32",
+        tabBarActiveTintColor: "#2680D9",
         tabBarInactiveTintColor: "gray",
         tabBarIcon: ({ color, size }) => {
           let iconName;
@@ -38,7 +39,7 @@ function MainTabs() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Reports" component={MyReportsScreen} />
       <Tab.Screen name="Map" component={MapScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      {/* <Tab.Screen name="Profile" component={ProfileScreen} /> */}
     </Tab.Navigator>
   );
 }
@@ -47,11 +48,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
+        {/* <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
-        <Stack.Screen name="CompleteProfile" component={CompleteProfileScreen} />
+        <Stack.Screen name="CompleteProfile" component={CompleteProfileScreen} /> */}
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen name="ReportIssue" component={ReportIssueScreen} />
+        <Stack.Screen name="IssuesListScreen" component={IssuesListScreen} />
         {/* Add other screens as needed */}
       </Stack.Navigator>
     </NavigationContainer>

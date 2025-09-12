@@ -3,15 +3,18 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-nativ
 import { api } from "../api";
 
 export default function SignupScreen({ navigation }) {
+  //const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  //const [info, setInfo] = useState("");
+
 
   async function handleSignup() {
     setError("");
     try {
-      const data = await api("/auth/signup", "POST", { email, phone, password });
+      const data = await api("../routes/auth/signup", "POST", { email, phone, password});
       navigation.replace("CompleteProfile", { token: data.token });
     } catch (err) {
       setError(err.message);
@@ -21,8 +24,8 @@ export default function SignupScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Signup</Text>
+       {/* <TextInput style={styles.input} placeholder="Name" value={name} onChangeText={setName} /> */}
       <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} />
-      <TextInput style={styles.input} placeholder="Phone" value={phone} onChangeText={setPhone} />
       <TextInput
         style={styles.input}
         placeholder="Password"
@@ -30,6 +33,9 @@ export default function SignupScreen({ navigation }) {
         value={password}
         onChangeText={setPassword}
       />
+      <TextInput style={styles.input} placeholder="Phone" value={phone} onChangeText={setPhone} />
+      {/* <TextInput style={styles.input} placeholder="INFO(optional)" value={info} onChangeText={setInfo} /> */}
+      
       {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
       <TouchableOpacity style={styles.btn} onPress={handleSignup}>
         <Text style={styles.btnText}>Signup</Text>

@@ -1,107 +1,183 @@
-// screens/ReportIssueScreen.js
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TextInput, Button, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { Camera } from "expo-camera";
-import * as Location from "expo-location";
 
-export default function ReportIssueScreen({ navigation }) {
-  const [desc, setDesc] = useState("");
-  const [category, setCategory] = useState("");
-  const [imageUri, setImageUri] = useState(null);
-  const [location, setLocation] = useState(null);
 
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [cameraReady, setCameraReady] = useState(false);
-  const cameraRef = useRef(null);
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Alert,
+  ScrollView,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import MapView, { Marker } from "react-native-maps";
 
-  // Request permissions
-  useEffect(() => {
-    (async () => {
-      const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus.status === "granted");
+export default function ReportIssueScreen() {
+  const [image, setImage] = useState(null);
+  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState({
+    latitude: 11.0770,
+    longitude: 77.1425,
+  });
 
-      const locationStatus = await Location.requestForegroundPermissionsAsync();
-      if (locationStatus.status === "granted") {
-        const current = await Location.getCurrentPositionAsync({});
-        setLocation(current.coords);
-      }
-    })();
-  }, []);
+  // Open Camera
+  const openCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Camera Access Required", "Please allow camera access.");
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({ base64: false });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
-  const takePicture = async () => {
-    if (cameraRef.current && cameraReady) {
-      const photo = await cameraRef.current.takePictureAsync();
-      setImageUri(photo.uri);
+  // Upload from gallery
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({ base64: false });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
     }
   };
 
   const submitReport = () => {
-    console.log({
-      description: desc,
-      category,
-      location,
-      image: imageUri,
-    });
-    alert("Report submitted!");
-    navigation.goBack();
+    if (!description || !title) {
+      Alert.alert("Error", "Please fill all required fields.");
+      return;
+    }
+    Alert.alert("Success", "Your report has been submitted!");
+    // Here you can send data to backend
   };
 
-  if (hasCameraPermission === null) return <Text>Requesting permissions...</Text>;
-  if (hasCameraPermission === false) return <Text>No access to camera</Text>;
-
   return (
-    <View style={styles.container}>
-      {!imageUri ? (
-        <Camera
-          style={styles.camera}
-          ref={cameraRef}
-          onCameraReady={() => setCameraReady(true)}
-        >
-          <View style={styles.captureButtonContainer}>
-            <TouchableOpacity style={styles.captureButton} onPress={takePicture} />
-          </View>
-        </Camera>
-      ) : (
-        <Image source={{ uri: imageUri }} style={styles.preview} />
-      )}
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.header}>Report an Issue</Text>
 
-      <Text>📍 Location: {location ? `${location.latitude}, ${location.longitude}` : "Auto-tagging..."}</Text>
+      {/* Camera Section */}
+      <View style={styles.cameraBox}>
+        {image ? (
+          <Image source={{ uri: image }} style={styles.previewImage} />
+        ) : (
+          <Text style={styles.cameraText}>Camera Not Available</Text>
+        )}
+      </View>
 
+      <TouchableOpacity style={styles.button} onPress={openCamera}>
+        <Text style={styles.buttonText}>Capture Photo</Text>
+      </TouchableOpacity>
+
+
+      {/* Description */}
       <TextInput
-        placeholder="Describe the issue..."
         style={styles.input}
-        value={desc}
-        onChangeText={setDesc}
-      />
-      <TextInput
-        placeholder="Select Category"
-        style={styles.input}
-        value={category}
-        onChangeText={setCategory}
+        placeholder="Description*"
+        value={description}
+        onChangeText={setDescription}
+        multiline
       />
 
-      <Button title="Submit" color="green" onPress={submitReport} />
-    </View>
+      {/* Title */}
+      <TextInput
+        style={styles.input}
+        placeholder="Title* (e.g., Large pothole on Elm Street)"
+        value={title}
+        onChangeText={setTitle}
+      />
+
+      {/* Location */}
+      <Text style={styles.label}>Location*</Text>
+      <MapView
+        style={styles.map}
+        region={{
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+      >
+        <Marker coordinate={location} />
+      </MapView>
+
+      <TouchableOpacity style={styles.submitBtn} onPress={submitReport}>
+        <Text style={styles.submitText}>Submit Report</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 },
-  camera: { flex: 1, borderRadius: 10, overflow: "hidden" },
-  captureButtonContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
+  container: {
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 20,
   },
-  captureButton: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: "white",
-    borderWidth: 3,
-    borderColor: "green",
+  cameraBox: {
+    height: 150,
+    borderWidth: 1,
+    borderColor: "#aaa",
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+    backgroundColor: "#f2f2f2",
   },
-  preview: { width: "100%", height: 300, marginVertical: 10, borderRadius: 10 },
-  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 5, padding: 10, marginVertical: 10 },
+  cameraText: {
+    color: "#888",
+  },
+  previewImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 8,
+  },
+  button: {
+    backgroundColor: "#4a90e2",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginVertical: 8,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  linkText: {
+    color: "#4a90e2",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+  },
+  label: {
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  map: {
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  submitBtn: {
+    backgroundColor: "#4a90e2",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  submitText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
 });
