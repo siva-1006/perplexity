@@ -11,8 +11,8 @@ export default function CompleteProfileScreen({ route, navigation }) {
   async function handleSave() {
     setError("");
     try {
-      await api("/me", "PUT", { name, info }, token);
-      navigation.replace("Main");
+      await api("/api/auth/me", "PUT", { name, info }, token);
+      navigation.replace("MainTabs");
     } catch (err) {
       setError(err.message);
     }

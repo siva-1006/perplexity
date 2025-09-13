@@ -1,6 +1,6 @@
 // screens/HomeScreen.js
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert } from "react-native";
 
 function HomeScreen({ navigation }) {
   return (
@@ -37,13 +37,12 @@ function HomeScreen({ navigation }) {
             <Text style={styles.cardText}>All submited issue</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("")}>
+          <TouchableOpacity style={styles.card} onPress={() => Alert.alert("Coming Soon", "Community Leaderboard feature coming soon!")}>
             <Image source={require("../assets/comm.webp")} style={styles.cardImage} />
             <Text style={styles.cardText}>Community Leaderboard</Text>
           </TouchableOpacity>
 
-
-        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("")}>
+        <TouchableOpacity style={styles.card} onPress={() => Alert.alert("Coming Soon", "Settings feature coming soon!")}>
             <Image source={require("../assets/settings.webp")} style={styles.cardImage} />
             <Text style={styles.cardText}>Settings</Text>
           </TouchableOpacity>

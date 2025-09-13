@@ -120,6 +120,7 @@
 import React, { useState } from "react";
 import { View, TextInput, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { api } from "../api";
+import { authStorage } from "../utils/auth";
 
 export default function LoginScreen({ navigation }) {
   const [identifier, setIdentifier] = useState("");
@@ -128,18 +129,52 @@ export default function LoginScreen({ navigation }) {
 
   async function handleLogin() {
     setError("");
-    try {
-      const data = await api("api/auth/login", "POST", { identifier, password });
+    
+    // Demo login credentials
+    const demoCredentials = {
+      email: "demo@civiccare.com",
+      phone: "1234567890",
+      password: "demo123"
+    };
+    
+    // Check if using demo credentials
+    const isDemoLogin = (identifier === demoCredentials.email || identifier === demoCredentials.phone) && password === demoCredentials.password;
+    
+    if (isDemoLogin) {
+      // Demo user data
+      const demoUser = {
+        id: "demo-user-123",
+        email: demoCredentials.email,
+        phone: demoCredentials.phone,
+        name: "Demo User",
+        info: "This is a demo account for testing the app"
+      };
       
+      const demoToken = "demo-token-" + Date.now();
+      
+      // Save demo auth data
+      await authStorage.saveAuth(demoToken, demoUser);
+      
+      // Go directly to main app since demo user has complete profile
+      navigation.replace("MainTabs");
+      return;
+    }
+    
+    // Try backend login for other credentials
+    try {
+      const data = await api("/api/auth/login", "POST", { identifier, password });
+      
+      // Save auth data
+      await authStorage.saveAuth(data.token, data.user);
 
       // if profile is incomplete → go to CompleteProfile
       if (!data.user.name || !data.user.phone) {
         navigation.replace("CompleteProfile", { token: data.token });
       } else {
-        navigation.replace("Main");
+        navigation.replace("MainTabs");
       }
     } catch (err) {
-      setError(err.message);
+      setError("Invalid credentials. Use demo@civiccare.com / 1234567890 with password 'demo123' for demo login.");
     }
   }
 
@@ -168,8 +203,15 @@ export default function LoginScreen({ navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-        <Text style={{ marginTop: 10 }}>Don’t have an account? Signup</Text>
+        <Text style={{ marginTop: 10 }}>Don't have an account? Signup</Text>
       </TouchableOpacity>
+      
+      <View style={styles.demoSection}>
+        <Text style={styles.demoTitle}>Demo Login:</Text>
+        <Text style={styles.demoText}>Email: demo@civiccare.com</Text>
+        <Text style={styles.demoText}>Phone: 1234567890</Text>
+        <Text style={styles.demoText}>Password: demo123</Text>
+      </View>
     </View>
   );
 }
@@ -180,4 +222,23 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, padding: 12, marginVertical: 8, borderRadius: 8 },
   btn: { backgroundColor: "#2e7d32", padding: 14, borderRadius: 8, marginTop: 10 },
   btnText: { color: "#fff", fontWeight: "bold", textAlign: "center" },
+  demoSection: { 
+    marginTop: 20, 
+    padding: 15, 
+    backgroundColor: "#f0f0f0", 
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd"
+  },
+  demoTitle: { 
+    fontSize: 16, 
+    fontWeight: "bold", 
+    marginBottom: 8, 
+    color: "#2e7d32" 
+  },
+  demoText: { 
+    fontSize: 14, 
+    marginBottom: 4, 
+    color: "#333" 
+  },
 });

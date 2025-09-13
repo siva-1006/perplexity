@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { api } from "../api";
+import { authStorage } from "../utils/auth";
 
 export default function SignupScreen({ navigation }) {
   //const [name, setName] = useState("");
@@ -14,7 +15,11 @@ export default function SignupScreen({ navigation }) {
   async function handleSignup() {
     setError("");
     try {
-      const data = await api("../routes/auth/signup", "POST", { email, phone, password});
+      const data = await api("/api/auth/signup", "POST", { email, phone, password});
+      
+      // Save auth data
+      await authStorage.saveAuth(data.token, data.user);
+      
       navigation.replace("CompleteProfile", { token: data.token });
     } catch (err) {
       setError(err.message);

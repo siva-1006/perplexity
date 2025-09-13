@@ -20,8 +20,8 @@
 
 //  const API_URL = "http://:4000"; // replace with your backend IP
 
-const API_URL = "http//192.168.2.141:4000";
-//const API_URL = "http://localhost:4000";
+const API_URL = "http://10.10.55.52:4000";
+// const API_URL = "http://localhost:4000";
 
 
 export async function api(endpoint, method = "GET", body = null, token = null) {
